@@ -1,0 +1,34 @@
+monitors:
+  resource:
+  - module: docker
+    options:
+      containers:
+      - all
+      interval: 1
+rateControl: &id001
+  opts:
+    tps: 400
+  type: fixed-rate
+smallbankArgs: &id002
+  accounts: 12000
+  policy: EC_COMMIT
+  txnPerBatch: 1
+test:
+  description: Smallbank benchmark for evaluating create, modify, and query operations.
+  name: smallbank
+  rounds:
+  - label: createAccount
+    rateControl: *id001
+    txNumber: 12000
+    workload:
+      arguments: *id002
+      module: workload/create.js
+  - label: sendPayment
+    rateControl: *id001
+    txNumber: 24000
+    workload:
+      arguments: *id002
+      module: workload/modify.js
+  workers:
+    number: 12
+    type: local

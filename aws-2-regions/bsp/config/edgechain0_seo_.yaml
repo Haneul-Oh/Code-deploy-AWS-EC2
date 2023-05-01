@@ -1,0 +1,736 @@
+# Copyright IBM Corp. All Rights Reserved.
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+
+version: '3'
+
+# volumes:
+  # peer0.org2.example.com:
+#   orderer.example.com:
+  # peer0.org1.example.com:
+  # peer1.org1.example.com:
+  # peer2.org1.example.com:
+  # peer3.org1.example.com:
+  # peer4.org1.example.com:
+
+networks:
+  edgechain0:
+    external: true
+  mec:
+    external: true
+
+services:
+  orderer.example.com:
+    container_name: orderer.example.com
+    image: ordererd
+    environment:
+      - FABRIC_LOGGING_SPEC=orderer.consensus.etcdraft=INFO:comm.grpc.server=INFO:INFO
+      - ORDERER_GENERAL_LISTENADDRESS=0.0.0.0
+      - ORDERER_GENERAL_LISTENPORT=7050
+      - ORDERER_GENERAL_GENESISMETHOD=file
+      - ORDERER_GENERAL_GENESISFILE=/var/hyperledger/orderer/orderer.genesis.block
+      - ORDERER_GENERAL_LOCALMSPID=OrdererMSP
+      - ORDERER_GENERAL_LOCALMSPDIR=/var/hyperledger/orderer/msp
+      # enabled TLS
+      - ORDERER_GENERAL_TLS_ENABLED=true
+      - ORDERER_GENERAL_TLS_PRIVATEKEY=/var/hyperledger/orderer/tls/server.key
+      - ORDERER_GENERAL_TLS_CERTIFICATE=/var/hyperledger/orderer/tls/server.crt
+      - ORDERER_GENERAL_TLS_ROOTCAS=[/var/hyperledger/orderer/tls/ca.crt]
+      - ORDERER_KAFKA_TOPIC_REPLICATIONFACTOR=1
+      - ORDERER_KAFKA_VERBOSE=true
+      - ORDERER_GENERAL_CLUSTER_CLIENTCERTIFICATE=/var/hyperledger/orderer/tls/server.crt
+      - ORDERER_GENERAL_CLUSTER_CLIENTPRIVATEKEY=/var/hyperledger/orderer/tls/server.key
+      - ORDERER_GENERAL_CLUSTER_ROOTCAS=[/var/hyperledger/orderer/tls/ca.crt]
+      - ORDERER_METRICS_PROVIDER=prometheus
+      - ORDERER_OPERATIONS_LISTENADDRESS=orderer.example.com:8443
+      - ORDERER_GENERAL_NAME=bsp0.orderer.edgechain0
+      - EDGECHAIN_ORDERER=true
+      - EDGECHAIN_NAME=edgechain::0
+      - EDGECHAIN_NODE_NAME=bsp0.orderer.edgechain0
+      - EDGECHAIN_LOCAL_BSP_EXECUTOR=bsp0.executor.edgechain0:10000
+      - EDGECHAIN_ACTIVE_BSPID=bsp0.executor.edgechain0
+      - EDGECHAIN_ROLE=orderer
+      - EDGECHAIN_CHAINID=mychannel
+      - BSP_SERVER_ADDR=:10000
+      - BATCH_SIZE=100
+      - TX_NUMBERS_ROUND1=12000
+      - TX_NUMBERS_ROUND2=24000
+      - NUM_CLIENTS=5
+      - OVERLAPPING_OPTION=0
+      - LOG_FILE=/app/log/bsp-logs.txt
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric
+    command: orderer
+    volumes:
+        - ./system-genesis-block/genesis.block:/var/hyperledger/orderer/orderer.genesis.block
+        - ./organizations/ordererOrganizations/example.com/orderers/orderer.example.com/msp:/var/hyperledger/orderer/msp
+        - ./organizations/ordererOrganizations/example.com/orderers/orderer.example.com/tls/:/var/hyperledger/orderer/tls
+        - ./organizations/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls:/etc/hyperledger/fabric/tls
+        - ./edgechain0/orderer.example.com/orderer:/var/hyperledger/production/orderer
+        - ./log/:/app/log
+    ports:
+      - 7050:7050
+      - 8443:8443
+      - 43320:10000
+    networks:
+      edgechain0:
+        aliases:
+          - bsp0.orderer.edgechain0.edge.com
+      mec:
+        aliases:
+          - bsp0.orderer.edgechain0
+    extra_hosts:
+      # auditor ip 
+      - "auditor0:172.31.39.4"
+      - "auditor1:172.31.44.162"
+      - "auditor2:172.31.39.98"
+      - "auditor3:172.31.34.225"
+      - "auditor4:172.31.34.142"
+      - "auditor5:172.31.32.71"
+      - "auditor6:172.31.38.102"
+      - "auditor7:172.31.35.196"
+      - "auditor8:172.31.37.117"
+      - "auditor9:172.31.46.114"
+      - "auditor10:172.31.38.15"
+      - "auditor11:10.0.15.12"
+      - "auditor12:10.0.15.62"
+      - "auditor13:10.0.4.31"
+      - "auditor14:10.0.0.252"
+      - "auditor15:10.0.6.93"
+      - "auditor16:10.0.14.214"
+      - "auditor17:10.0.3.184"
+      - "auditor18:10.0.13.241"
+      - "auditor19:10.0.13.80"
+      - "auditor20:10.0.3.17"
+      - "auditor21:20.0.6.40"
+      - "auditor22:20.0.1.218"
+      - "auditor23:20.0.1.82"
+      - "auditor24:20.0.6.99"
+      - "auditor25:20.0.3.242"
+      - "auditor26:20.0.4.15"
+      - "auditor27:20.0.10.173"
+      - "auditor28:20.0.12.205"
+      - "auditor29:20.0.2.238"
+      - "auditor30:20.0.1.158"
+      - "auditor31:20.0.3.78"
+      # client ip 
+      - "client0_edgechain0:3.37.121.247"
+      - "client1_edgechain0:3.37.11.182"
+      - "client2_edgechain0:13.209.133.189"
+      - "client3_edgechain0:52.79.193.214"
+      - "client4_edgechain0:43.200.230.184"
+      - "client5_edgechain0:13.209.24.16"
+      - "client6_edgechain0:3.34.170.214"
+      - "client7_edgechain0:3.34.244.162"
+      - "client8_edgechain0:3.35.151.163"
+      - "client9_edgechain0:43.201.137.243"
+
+  orderer2.example.com:
+    container_name: orderer2.example.com    
+    image: ordererd
+    # image: hyperledger/fabric-orderer:$IMAGE_TAG
+    environment:
+      # - FABRIC_LOGGING_SPEC=DEBUG
+      # - FABRIC_LOGGING_SPEC=orderer.consensus.etcdraft=DEBUG:INFO
+      - FABRIC_LOGGING_SPEC=orderer.consensus.etcdraft=INFO:comm.grpc.server=INFO:INFO
+      - ORDERER_GENERAL_LISTENADDRESS=0.0.0.0
+      - ORDERER_GENERAL_LISTENPORT=7050
+      - ORDERER_GENERAL_GENESISMETHOD=file
+      - ORDERER_GENERAL_GENESISFILE=/var/hyperledger/orderer/orderer.genesis.block
+      - ORDERER_GENERAL_LOCALMSPID=OrdererMSP
+      - ORDERER_GENERAL_LOCALMSPDIR=/var/hyperledger/orderer/msp
+      # enabled TLS
+      - ORDERER_GENERAL_TLS_ENABLED=true
+      - ORDERER_GENERAL_TLS_PRIVATEKEY=/var/hyperledger/orderer/tls/server.key
+      - ORDERER_GENERAL_TLS_CERTIFICATE=/var/hyperledger/orderer/tls/server.crt
+      - ORDERER_GENERAL_TLS_ROOTCAS=[/var/hyperledger/orderer/tls/ca.crt]
+      - ORDERER_KAFKA_TOPIC_REPLICATIONFACTOR=1
+      - ORDERER_KAFKA_VERBOSE=true
+      - ORDERER_GENERAL_CLUSTER_CLIENTCERTIFICATE=/var/hyperledger/orderer/tls/server.crt
+      - ORDERER_GENERAL_CLUSTER_CLIENTPRIVATEKEY=/var/hyperledger/orderer/tls/server.key
+      - ORDERER_GENERAL_CLUSTER_ROOTCAS=[/var/hyperledger/orderer/tls/ca.crt]
+      - ORDERER_METRICS_PROVIDER=prometheus
+      - ORDERER_OPERATIONS_LISTENADDRESS=orderer2.example.com:8443
+      - ORDERER_GENERAL_NAME=bsp0.orderer.edgechain0
+      - EDGECHAIN_ORDERER=true
+      - EDGECHAIN_NAME=edgechain::0
+      - EDGECHAIN_NODE_NAME=bsp1.orderer.edgechain0
+      - EDGECHAIN_LOCAL_BSP_EXECUTOR=bsp1.executor.edgechain0:10000
+      - EDGECHAIN_ACTIVE_BSPID=bsp1.executor.edgechain0
+      - EDGECHAIN_ROLE=orderer
+      - EDGECHAIN_CHAINID=mychannel2
+      - BSP_SERVER_ADDR=:10000
+      - OPTION=1
+      - BATCH_SIZE=3600
+      - NUMBER_OF_TOTAL_TX=100000
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric
+    command: orderer
+    volumes:
+        - ./system-genesis-block/genesis2.block:/var/hyperledger/orderer/orderer.genesis.block
+        - ./organizations/ordererOrganizations/example.com/orderers/orderer2.example.com/msp:/var/hyperledger/orderer/msp
+        - ./organizations/ordererOrganizations/example.com/orderers/orderer2.example.com/tls/:/var/hyperledger/orderer/tls
+        - ./organizations/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls:/etc/hyperledger/fabric/tls
+        - ./edgechain0/orderer2.example.com/orderer:/var/hyperledger/production/orderer
+    ports:
+      - 7150:7050
+      - 8543:8443
+      - 43321:10000
+    networks:
+      edgechain0:
+        aliases:
+          - bsp1.orderer.edgechain0.edge.com
+      mec:
+        aliases:
+          - bsp1.orderer.edgechain0
+    # restart: on-failure
+
+  peer0.org1.example.com:
+    container_name: peer0.org1.example.com
+    image: peerd
+    environment:
+      #Generic peer variables
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      # the following setting starts chaincode containers on the same
+      # bridge network as the peers
+      # https://docs.docker.com/compose/networking/
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=${COMPOSE_PROJECT_NAME}_test
+      # - FABRIC_LOGGING_SPEC=speculator,accepter,endorser=debug:blkbuf,txdep,committer,cmdbuf=warn:valimpl,gossip.discovery,msp.identity=error:INFO
+      # - FABRIC_LOGGING_SPEC=speculator,accepter,endorser,smartcontract=DEBUG:valimpl,gossip.discovery,gossip.gossip,msp.identity=ERROR:INFO
+      - FABRIC_LOGGING_SPEC=speculator,accepter,endorser,smartcontract,mcaudithandler,sserver=DEBUG:valimpl,gossip.discovery,gossip.gossip,msp.identity=ERROR:INFO
+      # - FABRIC_LOGGING_SPEC=DEBUG
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_PEER_GOSSIP_USELEADERELECTION=false
+      - CORE_PEER_GOSSIP_ORGLEADER=true
+      - CORE_PEER_PROFILE_ENABLED=true
+      - CORE_PEER_TLS_CERT_FILE=/etc/hyperledger/fabric/tls/server.crt
+      - CORE_PEER_TLS_KEY_FILE=/etc/hyperledger/fabric/tls/server.key
+      - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/tls/ca.crt
+      # Peer specific variabes
+      - CORE_PEER_ID=peer0.org1.example.com
+      - CORE_PEER_ADDRESS=peer0.org1.example.com:7051
+      - CORE_PEER_LISTENADDRESS=0.0.0.0:7051
+      - CORE_PEER_CHAINCODEADDRESS=peer0.org1.example.com:7052
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:7052
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.org1.example.com:7051
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.org1.example.com:7051
+      - CORE_PEER_LOCALMSPID=Org1MSP
+      - CORE_METRICS_PROVIDER=prometheus
+      - CORE_OPERATIONS_LISTENADDRESS=peer0.org1.example.com:9443
+        # Indicate that this container serves as a bsp container ~
+      - BSP_PEER_FLAG=true
+      - BSP_SERVER_ADDR=:10000
+      - BSP_ORDERER_ADDR=orderer.example.com:7050
+      - EDGECHAIN_NAME=edgechain::0
+      - EDGECHAIN_ACTIVE_BSPID=bsp0.executor.edgechain0
+      - EDGECHAIN_NODE_NAME=bsp0.executor.edgechain0
+      - EDGECHAIN_ROLE=executor
+      - EDGECHAIN_CHAINID=mychannel
+      - DISCOVERY_AS_LOCALHOST=false      
+      - BATCH_SIZE=100
+      - LOG_FILE=/app/log/bsp-logs.txt
+      - TX_NUMBERS_ROUND1=12000
+      - TX_NUMBERS_ROUND2=24000
+      - NUM_CLIENTS=1
+    volumes:
+        - /var/run/:/host/var/run/
+        - ./organizations/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/msp:/etc/hyperledger/fabric/msp
+        - ./organizations/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls:/etc/hyperledger/fabric/tls
+        - ./organizations/ordererOrganizations/example.com/orderers/orderer.example.com/msp:/etc/hyperledger/fabric/orderer/msp
+        - ./organizations/ordererOrganizations/example.com/orderers/orderer.example.com/tls/:/etc/hyperledger/fabric/orderer/tls
+        - ./edgechain0/peer0.org1.example.com:/var/hyperledger/production
+        - ./sampleshard:/var/hyperledger/sampleshard
+        - ./log/:/app/log
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
+    command: peer node start
+    ports:
+      - 7051:7051
+      - 9443:9443
+      - 10000:10000
+    networks:
+      edgechain0:
+        aliases:
+          - bsp0.executor.edgechain0
+      mec:
+        aliases:
+          - bsp0.executor.edgechain0
+    depends_on:
+      - orderer.example.com
+    restart: on-failure
+
+  bsp1.executor.edgechain0:
+    container_name: bsp1.executor.edgechain0
+    image: peerd
+    environment:
+      #Generic peer variables
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      # the following setting starts chaincode containers on the same
+      # bridge network as the peers
+      # https://docs.docker.com/compose/networking/
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=${COMPOSE_PROJECT_NAME}_test
+      # - FABRIC_LOGGING_SPEC=speculator,accepter,endorser=debug:blkbuf,txdep,committer,gossip,comm,cmdbuf,kvledger=warn:valimpl,gossip.gossip,gossip.discovery,gossip.privdata=error:INFO
+      # - FABRIC_LOGGING_SPEC=DEBUG
+      # - FABRIC_LOGGING_SPEC=speculator,accepter,endorser=debug:blkbuf,txdep,committer,cmdbuf=warn:valimpl,gossip.discovery,msp.identity=error:INFO
+      # - FABRIC_LOGGING_SPEC=speculator,accepter,endorser=debug:valimpl,gossip.discovery,msp.identity=error:INFO
+      - FABRIC_LOGGING_SPEC=speculator,accepter,endorser=DEBUG:valimpl,gossip.discovery,gossip.gossip,msp.identity=ERROR:INFO
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_PEER_GOSSIP_USELEADERELECTION=false
+      - CORE_PEER_GOSSIP_ORGLEADER=true
+      - CORE_PEER_PROFILE_ENABLED=true
+      - CORE_PEER_TLS_CERT_FILE=/etc/hyperledger/fabric/tls/server.crt
+      - CORE_PEER_TLS_KEY_FILE=/etc/hyperledger/fabric/tls/server.key
+      - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/tls/ca.crt
+      - CORE_PEER_ID=peer5.org1.example.com
+      - CORE_PEER_ADDRESS=peer5.org1.example.com:7051
+      - CORE_PEER_LISTENADDRESS=0.0.0.0:7051
+      - CORE_PEER_CHAINCODEADDRESS=peer5.org1.example.com:7052
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:7052
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer1.org1.example.com:7051
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer5.org1.example.com:7051
+      - CORE_PEER_LOCALMSPID=Org1MSP
+      - CORE_METRICS_PROVIDER=prometheus
+      - CORE_OPERATIONS_LISTENADDRESS=peer5.org1.example.com:9443
+      - BSP_PEER_FLAG=true
+      - BSP_SERVER_ADDR=:10000
+      - BSP_ORDERER_ADDR=orderer2.example.com:7050
+      - EDGECHAIN_NAME=edgechain::0
+      - EDGECHAIN_ACTIVE_BSPID=bsp1.executor.edgechain0
+      - EDGECHAIN_NODE_NAME=bsp1.executor.edgechain0
+      - EDGECHAIN_ROLE=executor
+      - EDGECHAIN_CHAINID=mychannel2
+    volumes:
+        - /var/run/:/host/var/run/
+        - ./organizations/peerOrganizations/org1.example.com/peers/peer5.org1.example.com/msp:/etc/hyperledger/fabric/msp
+        - ./organizations/peerOrganizations/org1.example.com/peers/peer5.org1.example.com/tls:/etc/hyperledger/fabric/tls
+        - ./organizations/ordererOrganizations/example.com/orderers/orderer.example.com/msp:/etc/hyperledger/fabric/orderer/msp
+        - ./organizations/ordererOrganizations/example.com/orderers/orderer.example.com/tls/:/etc/hyperledger/fabric/orderer/tls
+        - ./edgechain0/peer5.org1.example.com:/var/hyperledger/production
+        - ./sampleshard:/var/hyperledger/sampleshard
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
+    command: peer node start
+    ports:
+      - 7551:7051
+      - 9853:9443
+      - 10050:10000
+    networks:
+      edgechain0:
+        aliases:
+          - peer5.org1.example.com
+    restart: on-failure
+
+
+  # peer0.org2.example.com:
+  #   container_name: peer0.org2.example.com
+  #   image: peerd
+  #   environment:
+  #     #Generic peer variables
+  #     - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+  #     # the following setting starts chaincode containers on the same
+  #     # bridge network as the peers
+  #     # https://docs.docker.com/compose/networking/
+  #     - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=${COMPOSE_PROJECT_NAME}_test
+  #     - FABRIC_LOGGING_SPEC=INFO
+  #     #- FABRIC_LOGGING_SPEC=DEBUG
+  #     - CORE_PEER_TLS_ENABLED=true
+  #     - CORE_PEER_GOSSIP_USELEADERELECTION=false
+  #     - CORE_PEER_GOSSIP_ORGLEADER=true
+  #     - CORE_PEER_PROFILE_ENABLED=true
+  #     - CORE_PEER_TLS_CERT_FILE=/etc/hyperledger/fabric/tls/server.crt
+  #     - CORE_PEER_TLS_KEY_FILE=/etc/hyperledger/fabric/tls/server.key
+  #     - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/tls/ca.crt
+  #     # Peer specific variabes
+  #     - CORE_PEER_ID=peer0.org2.example.com
+  #     - CORE_PEER_ADDRESS=peer0.org2.example.com:9051
+  #     - CORE_PEER_LISTENADDRESS=0.0.0.0:9051
+  #     - CORE_PEER_CHAINCODEADDRESS=peer0.org2.example.com:9052
+  #     - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:9052
+  #     - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.org2.example.com:9051
+  #     - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.org2.example.com:9051
+  #     - CORE_PEER_LOCALMSPID=Org2MSP
+  #     - EDGECHAIN_NAME=edgechain::0
+  #   volumes:
+  #       - /var/run/:/host/var/run/
+  #       - ../organizations/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/msp:/etc/hyperledger/fabric/msp
+  #       - ../organizations/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls:/etc/hyperledger/fabric/tls
+  #       - ../organizations/ordererOrganizations/example.com/orderers/orderer.example.com/msp:/etc/hyperledger/fabric/orderer/msp
+  #       - ../organizations/ordererOrganizations/example.com/orderers/orderer.example.com/tls/:/etc/hyperledger/fabric/orderer/tls
+  #       - peer0.org2.example.com:/var/hyperledger/production
+  #   working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
+  #   command: peer node start
+  #   ports:
+  #     - 9051:9051
+  #   networks:
+  #     - test
+
+  # peer1.org1.example.com:
+  #   container_name: peer1.org1.example.com
+  #   image: peerd
+  #   environment:
+  #     #Generic peer variables
+  #     - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+  #     # the following setting starts chaincode containers on the same
+  #     # bridge network as the peers
+  #     # https://docs.docker.com/compose/networking/
+  #     - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=${COMPOSE_PROJECT_NAME}_test
+  #     # - FABRIC_LOGGING_SPEC=speculator,accepter,endorser=debug:blkbuf,txdep,committer,gossip,comm,cmdbuf,kvledger=warn:valimpl,gossip.gossip,gossip.discovery,gossip.privdata=error:INFO
+  #     # - FABRIC_LOGGING_SPEC=DEBUG
+  #     # - FABRIC_LOGGING_SPEC=speculator,accepter,endorser=debug:blkbuf,txdep,committer,cmdbuf=warn:valimpl,gossip.discovery,msp.identity=error:INFO
+  #     - FABRIC_LOGGING_SPEC=speculator,accepter,endorser=DEBUG:valimpl,gossip.discovery,gossip.gossip,msp.identity=ERROR:INFO
+  #     - CORE_PEER_TLS_ENABLED=true
+  #     - CORE_PEER_GOSSIP_USELEADERELECTION=false
+  #     - CORE_PEER_GOSSIP_ORGLEADER=true
+  #     - CORE_PEER_PROFILE_ENABLED=true
+  #     - CORE_PEER_TLS_CERT_FILE=/etc/hyperledger/fabric/tls/server.crt
+  #     - CORE_PEER_TLS_KEY_FILE=/etc/hyperledger/fabric/tls/server.key
+  #     - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/tls/ca.crt
+  #     - CORE_PEER_ID=peer1.org1.example.com
+  #     - CORE_PEER_ADDRESS=peer1.org1.example.com:7051
+  #     - CORE_PEER_LISTENADDRESS=0.0.0.0:7051
+  #     - CORE_PEER_CHAINCODEADDRESS=peer1.org1.example.com:7052
+  #     - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:7052
+  #     - CORE_PEER_GOSSIP_BOOTSTRAP=peer1.org1.example.com:7051
+  #     - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer1.org1.example.com:7051
+  #     - CORE_PEER_LOCALMSPID=Org1MSP
+  #     - CORE_METRICS_PROVIDER=prometheus
+  #     - CORE_OPERATIONS_LISTENADDRESS=peer1.org1.example.com:9443
+  #     - BSP_PEER_FLAG=false
+  #     - BSP_SERVER_ADDR=:10000
+  #     - EDGECHAIN_NAME=edgechain::0
+  #     - EDGECHAIN_ACTIVE_BSPID=bsp0.executor.edgechain0
+  #     - EDGECHAIN_NODE_NAME=auditor1.edgechain0.com
+  #     - EDGECHAIN_CHANGER_ENDPOINT=141.223.91.172
+  #     - EDGECHAIN_ROLE=auditor
+  #   volumes:
+  #       - /var/run/:/host/var/run/
+  #       - ./organizations/peerOrganizations/org1.example.com/peers/peer1.org1.example.com/msp:/etc/hyperledger/fabric/msp
+  #       - ./organizations/peerOrganizations/org1.example.com/peers/peer1.org1.example.com/tls:/etc/hyperledger/fabric/tls
+  #       - ./organizations/ordererOrganizations/example.com/orderers/orderer.example.com/msp:/etc/hyperledger/fabric/orderer/msp
+  #       - ./organizations/ordererOrganizations/example.com/orderers/orderer.example.com/tls/:/etc/hyperledger/fabric/orderer/tls
+  #       - ./edgechain0/peer1.org1.example.com:/var/hyperledger/production
+  #   working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
+  #   command: peer node start
+  #   ports:
+  #     - 7151:7051
+  #     - 9543:9443
+  #     - 10010:10000
+  #   networks:
+  #     edgechain0:
+  #       aliases:
+  #         - auditor1.edgechain0.com
+  #         - changer1.edgechain0.com
+  #   restart: on-failure
+
+  # peer2.org1.example.com:
+  #   container_name: peer2.org1.example.com
+  #   image: peerd
+  #   environment:
+  #     #Generic peer variables
+  #     - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+  #     # the following setting starts chaincode containers on the same
+  #     # bridge network as the peers
+  #     # https://docs.docker.com/compose/networking/
+  #     - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=${COMPOSE_PROJECT_NAME}_test
+  #     # - FABRIC_LOGGING_SPEC=speculator,accepter,endorser=debug:blkbuf,txdep,committer,gossip,comm,cmdbuf,kvledger=warn:valimpl,gossip.gossip,gossip.discovery,gossip.privdata=error:INFO
+  #     # - FABRIC_LOGGING_SPEC=DEBUG
+  #     # - FABRIC_LOGGING_SPEC=speculator,accepter,endorser=debug:blkbuf,txdep,committer,cmdbuf=warn:valimpl,gossip.discovery,msp.identity=error:INFO
+  #     # - FABRIC_LOGGING_SPEC=speculator,accepter,endorser=debug:valimpl,gossip.discovery,msp.identity=error:INFO
+  #     - FABRIC_LOGGING_SPEC=speculator,accepter,endorser=DEBUG:valimpl,gossip.discovery,gossip.gossip,msp.identity=ERROR:INFO
+  #     - CORE_PEER_TLS_ENABLED=true
+  #     - CORE_PEER_GOSSIP_USELEADERELECTION=false
+  #     - CORE_PEER_GOSSIP_ORGLEADER=true
+  #     - CORE_PEER_PROFILE_ENABLED=true
+  #     - CORE_PEER_TLS_CERT_FILE=/etc/hyperledger/fabric/tls/server.crt
+  #     - CORE_PEER_TLS_KEY_FILE=/etc/hyperledger/fabric/tls/server.key
+  #     - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/tls/ca.crt
+  #     - CORE_PEER_ID=peer2.org1.example.com
+  #     - CORE_PEER_ADDRESS=peer2.org1.example.com:7051
+  #     - CORE_PEER_LISTENADDRESS=0.0.0.0:7051
+  #     - CORE_PEER_CHAINCODEADDRESS=peer2.org1.example.com:7052
+  #     - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:7052
+  #     - CORE_PEER_GOSSIP_BOOTSTRAP=peer1.org1.example.com:7051
+  #     - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer2.org1.example.com:7051
+  #     - CORE_PEER_LOCALMSPID=Org1MSP
+  #     - CORE_METRICS_PROVIDER=prometheus
+  #     - CORE_OPERATIONS_LISTENADDRESS=peer2.org1.example.com:9443
+  #     - BSP_PEER_FLAG=false
+  #     - BSP_SERVER_ADDR=:10000
+  #     - EDGECHAIN_NAME=edgechain::0
+  #     - EDGECHAIN_ACTIVE_BSPID=bsp0.executor.edgechain0
+  #     - EDGECHAIN_NODE_NAME=auditor2.edgechain0.com
+  #     - EDGECHAIN_CHANGER_ENDPOINT=141.223.91.172
+  #     - EDGECHAIN_ROLE=auditor
+  #   volumes:
+  #       - /var/run/:/host/var/run/
+  #       - ./organizations/peerOrganizations/org1.example.com/peers/peer2.org1.example.com/msp:/etc/hyperledger/fabric/msp
+  #       - ./organizations/peerOrganizations/org1.example.com/peers/peer2.org1.example.com/tls:/etc/hyperledger/fabric/tls
+  #       - ./organizations/ordererOrganizations/example.com/orderers/orderer.example.com/msp:/etc/hyperledger/fabric/orderer/msp
+  #       - ./organizations/ordererOrganizations/example.com/orderers/orderer.example.com/tls/:/etc/hyperledger/fabric/orderer/tls
+  #       - ./edgechain0/peer2.org1.example.com:/var/hyperledger/production
+  #   working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
+  #   command: peer node start
+  #   ports:
+  #     - 7251:7051
+  #     - 9643:9443
+  #     - 10020:10000
+  #   networks:
+  #     edgechain0:
+  #       aliases:
+  #         - auditor2.edgechain0.com
+  #         - changer2.edgechain0.com
+  #   restart: on-failure
+
+  # peer3.org1.example.com:
+  #   container_name: peer3.org1.example.com
+  #   image: peerd
+  #   environment:
+  #     #Generic peer variables
+  #     - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+  #     # the following setting starts chaincode containers on the same
+  #     # bridge network as the peers
+  #     # https://docs.docker.com/compose/networking/
+  #     - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=${COMPOSE_PROJECT_NAME}_test
+  #     # - FABRIC_LOGGING_SPEC=speculator,accepter,endorser=debug:blkbuf,txdep,committer,gossip,comm,cmdbuf,kvledger=warn:valimpl,gossip.gossip,gossip.discovery,gossip.privdata=error:INFO
+  #     # - FABRIC_LOGGING_SPEC=DEBUG
+  #     # - FABRIC_LOGGING_SPEC=speculator,accepter,endorser=debug:blkbuf,txdep,committer,cmdbuf=warn:valimpl,gossip.discovery,msp.identity=error:INFO
+  #     # - FABRIC_LOGGING_SPEC=speculator,accepter,endorser=debug:valimpl,gossip.discovery,msp.identity=error:INFO
+  #     - FABRIC_LOGGING_SPEC=speculator,accepter,endorser=DEBUG:valimpl,gossip.discovery,gossip.gossip,msp.identity=ERROR:INFO
+  #     - CORE_PEER_TLS_ENABLED=true
+  #     - CORE_PEER_GOSSIP_USELEADERELECTION=false
+  #     - CORE_PEER_GOSSIP_ORGLEADER=true
+  #     - CORE_PEER_PROFILE_ENABLED=true
+  #     - CORE_PEER_TLS_CERT_FILE=/etc/hyperledger/fabric/tls/server.crt
+  #     - CORE_PEER_TLS_KEY_FILE=/etc/hyperledger/fabric/tls/server.key
+  #     - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/tls/ca.crt
+  #     - CORE_PEER_ID=peer3.org1.example.com
+  #     - CORE_PEER_ADDRESS=peer3.org1.example.com:7051
+  #     - CORE_PEER_LISTENADDRESS=0.0.0.0:7051
+  #     - CORE_PEER_CHAINCODEADDRESS=peer3.org1.example.com:7052
+  #     - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:7052
+  #     - CORE_PEER_GOSSIP_BOOTSTRAP=peer3.org1.example.com:7051
+  #     - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer3.org1.example.com:7051
+  #     - CORE_PEER_LOCALMSPID=Org1MSP
+  #     - CORE_METRICS_PROVIDER=prometheus
+  #     - CORE_OPERATIONS_LISTENADDRESS=peer3.org1.example.com:9443
+  #     - BSP_PEER_FLAG=false
+  #     - BSP_SERVER_ADDR=:10000
+  #     - EDGECHAIN_NAME=edgechain::0
+  #     - EDGECHAIN_ACTIVE_BSPID=bsp0.executor.edgechain0
+  #     - EDGECHAIN_NODE_NAME=auditor3.edgechain0.com
+  #     - EDGECHAIN_CHANGER_ENDPOINT=141.223.91.172
+  #     - EDGECHAIN_ROLE=auditor
+  #   volumes:
+  #       - /var/run/:/host/var/run/
+  #       - ./organizations/peerOrganizations/org1.example.com/peers/peer3.org1.example.com/msp:/etc/hyperledger/fabric/msp
+  #       - ./organizations/peerOrganizations/org1.example.com/peers/peer3.org1.example.com/tls:/etc/hyperledger/fabric/tls
+  #       - ./organizations/ordererOrganizations/example.com/orderers/orderer.example.com/msp:/etc/hyperledger/fabric/orderer/msp
+  #       - ./organizations/ordererOrganizations/example.com/orderers/orderer.example.com/tls/:/etc/hyperledger/fabric/orderer/tls
+  #       - ./edgechain0/peer3.org1.example.com:/var/hyperledger/production
+  #   working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
+  #   command: peer node start
+  #   ports:
+  #     - 7351:7051
+  #     - 9743:9443
+  #     - 10030:10000
+  #   networks:
+  #     edgechain0:
+  #       aliases:
+  #         - auditor3.edgechain0.com
+  #         - changer3.edgechain0.com
+  #   restart: on-failure
+
+  # peer6.org1.example.com:
+  #   container_name: peer6.org1.example.com
+  #   image: peerd
+  #   environment:
+  #     #Generic peer variables
+  #     - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+  #     # the following setting starts chaincode containers on the same
+  #     # bridge network as the peers
+  #     # https://docs.docker.com/compose/networking/
+  #     - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=${COMPOSE_PROJECT_NAME}_test
+  #     # - FABRIC_LOGGING_SPEC=speculator,accepter,endorser=debug:blkbuf,txdep,committer,gossip,comm,cmdbuf,kvledger=warn:valimpl,gossip.gossip,gossip.discovery,gossip.privdata=error:INFO
+  #     # - FABRIC_LOGGING_SPEC=DEBUG
+  #     # - FABRIC_LOGGING_SPEC=speculator,accepter,endorser=debug:blkbuf,txdep,committer,cmdbuf=warn:valimpl,gossip.discovery,msp.identity=error:INFO
+  #     # - FABRIC_LOGGING_SPEC=speculator,accepter,endorser=debug:valimpl,gossip.discovery,msp.identity=error:INFO
+  #     - FABRIC_LOGGING_SPEC=speculator,accepter,endorser=DEBUG:valimpl,gossip.discovery,gossip.gossip,msp.identity=ERROR:INFO
+  #     - CORE_PEER_TLS_ENABLED=true
+  #     - CORE_PEER_GOSSIP_USELEADERELECTION=false
+  #     - CORE_PEER_GOSSIP_ORGLEADER=true
+  #     - CORE_PEER_PROFILE_ENABLED=true
+  #     - CORE_PEER_TLS_CERT_FILE=/etc/hyperledger/fabric/tls/server.crt
+  #     - CORE_PEER_TLS_KEY_FILE=/etc/hyperledger/fabric/tls/server.key
+  #     - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/tls/ca.crt
+  #     - CORE_PEER_ID=peer6.org1.example.com
+  #     - CORE_PEER_ADDRESS=peer6.org1.example.com:7051
+  #     - CORE_PEER_LISTENADDRESS=0.0.0.0:7051
+  #     - CORE_PEER_CHAINCODEADDRESS=peer6.org1.example.com:7052
+  #     - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:7052
+  #     - CORE_PEER_GOSSIP_BOOTSTRAP=peer6.org1.example.com:7051
+  #     - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer6.org1.example.com:7051
+  #     - CORE_PEER_LOCALMSPID=Org1MSP
+  #     - CORE_METRICS_PROVIDER=prometheus
+  #     - CORE_OPERATIONS_LISTENADDRESS=peer6.org1.example.com:9443
+  #     - BSP_PEER_FLAG=false
+  #     - BSP_SERVER_ADDR=:10000
+  #     - EDGECHAIN_NAME=edgechain::0
+  #     - EDGECHAIN_ACTIVE_BSPID=bsp0.executor.edgechain0
+  #     - EDGECHAIN_NODE_NAME=auditor4.edgechain0.com
+  #     - EDGECHAIN_CHANGER_ENDPOINT=141.223.91.172
+  #     - EDGECHAIN_ROLE=auditor
+  #   volumes:
+  #       - /var/run/:/host/var/run/
+  #       - ./organizations/peerOrganizations/org1.example.com/peers/peer6.org1.example.com/msp:/etc/hyperledger/fabric/msp
+  #       - ./organizations/peerOrganizations/org1.example.com/peers/peer6.org1.example.com/tls:/etc/hyperledger/fabric/tls
+  #       - ./organizations/ordererOrganizations/example.com/orderers/orderer.example.com/msp:/etc/hyperledger/fabric/orderer/msp
+  #       - ./organizations/ordererOrganizations/example.com/orderers/orderer.example.com/tls/:/etc/hyperledger/fabric/orderer/tls
+  #       - ./edgechain0/peer6.org1.example.com:/var/hyperledger/production
+  #   working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
+  #   command: peer node start
+  #   ports:
+  #     - 7451:7051
+  #     - 9843:9443
+  #     - 10040:10000
+  #   networks:
+  #     edgechain0:
+  #       aliases:
+  #         - auditor4.edgechain0.com
+  #         - changer4.edgechain0.com
+  #   restart: on-failure
+
+  # cli:
+  #   container_name: cli
+  #   image: hyperledger/fabric-tools:latest
+  #   environment: 
+  #     #Generic peer variables
+  #     - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+  #     # the following setting starts chaincode containers on the same
+  #     # bridge network as the peers
+  #     # https://docs.docker.com/compose/networking/
+  #     # - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=${COMPOSE_PROJECT_NAME}_test
+  #     # - FABRIC_LOGGING_SPEC=speculator,accepter,endorser=debug:blkbuf,txdep,committer,gossip,comm,cmdbuf,kvledger=warn:valimpl,gossip.gossip,gossip.discovery,gossip.privdata=error:INFO
+  #     # - FABRIC_LOGGING_SPEC=DEBUG
+  #     # - FABRIC_LOGGING_SPEC=speculator,accepter,endorser=debug:blkbuf,txdep,committer,cmdbuf=warn:valimpl,gossip.discovery,msp.identity=error:INFO
+  #     # - FABRIC_LOGGING_SPEC=speculator,accepter,endorser=DEBUG:valimpl,gossip.discovery,gossip.gossip,msp.identity=ERROR:INFO
+  #     - CORE_PEER_TLS_ENABLED=true
+  #     - CORE_PEER_GOSSIP_USELEADERELECTION=false
+  #     - CORE_PEER_GOSSIP_ORGLEADER=true
+  #     - CORE_PEER_PROFILE_ENABLED=true
+  #     - CORE_PEER_TLS_CERT_FILE=/etc/hyperledger/fabric/tls/server.crt
+  #     - CORE_PEER_TLS_KEY_FILE=/etc/hyperledger/fabric/tls/server.key
+  #     - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/tls/ca.crt
+  #     - CORE_PEER_ID=peer1.org1.example.com
+  #     - CORE_PEER_ADDRESS=peer1.org1.example.com:7051
+  #     - CORE_PEER_LISTENADDRESS=0.0.0.0:7051
+  #     - CORE_PEER_CHAINCODEADDRESS=peer1.org1.example.com:7052
+  #     - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:7052
+  #     - CORE_PEER_GOSSIP_BOOTSTRAP=peer1.org1.example.com:7051
+  #     - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer1.org1.example.com:7051
+  #     - CORE_PEER_LOCALMSPID=Org1MSP
+  #     - CORE_METRICS_PROVIDER=prometheus
+  #   volumes:
+  #       - /var/run/:/host/var/run/
+  #       - ./organizations/peerOrganizations/org1.example.com/peers/peer1.org1.example.com/msp:/etc/hyperledger/fabric/msp
+  #       - ./organizations/peerOrganizations/org1.example.com/peers/peer1.org1.example.com/tls:/etc/hyperledger/fabric/tls
+  #       - ./organizations/ordererOrganizations/example.com/orderers/orderer.example.com/msp:/etc/hyperledger/fabric/orderer/msp
+  #       - ./organizations/ordererOrganizations/example.com/orderers/orderer.example.com/tls/:/etc/hyperledger/fabric/orderer/tls
+  #       - ./edgechain0/peer1.org1.example.com:/var/hyperledger/production
+  #   working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
+  #   command: /bin/bash
+  #   networks:
+  #     edgechain0:
+  #       aliases:
+  #         - auditor1.edgechain0.com
+  #         - changer1.edgechain0.com
+  #   restart: on-failure
+
+  # aggregator0.edgechain0.com:
+  #   container_name: aggregator0.edgechain0.com
+  #   image: aggregator
+  #   environment:
+  #     - CORE_PEER_LOCALMSPID=Org1MSP
+  #     - CORE_METRICS_PROVIDER=prometheus
+  #     - CORE_OPERATIONS_LISTENADDRESS=client0.edgechain.com:9443
+  #     - AGGREGATOR_ENABLED=enabled
+  #     - AGGREGATOR_CFG_PATH=/etc/hyperledger/fabric
+  #     - AGGREGATOR_BSP_ADDRESS=peer0.org1.example.com:10000
+  #     # - AGGREGATOR_AUDITOR_ADDRESS=[auditor1.edgechain0.com:7000,auditor2.edgechain0.com:7000,auditor3.edgechain0.com:7000,auditor4.edgechain0.com:7000]
+  #     - AGGREGATOR_AUDITOR_ADDRESS=[auditor1.edgechain0.com:7000]
+  #     - AGGREGATOR_PORT=30303
+  #     - AGGREGATOR_EVENT_BUFFER_SIZE=60000
+  #     - AGGREGATOR_ID=aggregator0.edgechain0.com
+  #     - AGGREGATOR_TXSIM_ENABLED=false
+  #     - AGGREGATOR_TXSIM_WORKLOAD_SIZE=1000000
+  #     - EDGECHAIN_NAME=edgechain::0
+  #     - EDGECHAIN_ROLE=aggregator
+  #   ports:
+  #     - 37051:7051
+  #     - 30303:30303
+  #     - 40303:9443
+  #   networks:
+  #     edgechain0:
+  #       aliases:
+  #         - client0.edgechain.com
+  #   # depends_on:
+  #   #   - peer1.org1.example.com
+  #   #   - peer2.org1.example.com
+  #   #   - peer3.org1.example.com
+  #   #   - peer4.org1.example.com
+  #   volumes:
+  #       - ./sampleshard:/var/hyperledger/sampleshard
+  #       - ./organizations/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp:/etc/hyperledger/fabric/msp
+  #       - ./organizations/peerOrganizations/org1.example.com/users/Admin@org1.example.com/tls:/etc/hyperledger/fabric/tls
+  #   restart: on-failure
+
+
+  # aggregator1.edgechain0.com:
+  #   container_name: aggregator1.edgechain0.com
+  #   image: aggregator
+  #   environment:
+  #     - CORE_PEER_LOCALMSPID=Org1MSP
+  #     - CORE_METRICS_PROVIDER=prometheus
+  #     - CORE_OPERATIONS_LISTENADDRESS=client1.edgechain.com:9443
+  #     - AGGREGATOR_ENABLED=enabled
+  #     - AGGREGATOR_CFG_PATH=/etc/hyperledger/fabric
+  #     - AGGREGATOR_BSP_ADDRESS=peer0.org1.example.com:10000
+  #     # - AGGREGATOR_AUDITOR_ADDRESS=[auditor1.edgechain0.com:7000,auditor2.edgechain0.com:7000,auditor3.edgechain0.com:7000,auditor4.edgechain0.com:7000]
+  #     - AGGREGATOR_AUDITOR_ADDRESS=[auditor2.edgechain0.com:7000]
+  #     - AGGREGATOR_PORT=30303
+  #     - AGGREGATOR_EVENT_BUFFER_SIZE=60000
+  #     - AGGREGATOR_ID=aggregator1.edgechain0.com
+  #     - AGGREGATOR_TXSIM_ENABLED=false
+  #     - AGGREGATOR_TXSIM_WORKLOAD_SIZE=1000000
+  #     - EDGECHAIN_NAME=edgechain::0
+  #     - EDGECHAIN_ROLE=aggregator
+  #   ports:
+  #     - 37151:7051
+  #     - 30313:30303
+  #     - 40313:9443
+  #   networks:
+  #     edgechain0:
+  #       aliases:
+  #         - client1.edgechain.com
+  #   depends_on:
+  #     - primaryAuditor
+  #     - auditor0
+  #     - auditor1
+  #     - auditor2
+  #   volumes:
+  #       - ./sampleshard:/var/hyperledger/sampleshard
+  #       - ./organizations/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp:/etc/hyperledger/fabric/msp
+  #       - ./organizations/peerOrganizations/org1.example.com/users/Admin@org1.example.com/tls:/etc/hyperledger/fabric/tls
+  #   restart: on-failure
+      
+   
+
+
+
+  # monitor.edgechain0.com:
+  #   container_name: monitor.edgechain0.com
+  #   image: prom/prometheus
+  #   ports: 
+  #     - 9090:9090
+  #   networks:
+  #     edgechain0:
+  #   volumes:
+  #       - ./prom/prometheus.yml:/etc/prometheus/prometheus.yml
+  #       # - ./prom/monitor.edgechain0.com:/prometheus
+  #   restart: on-failure

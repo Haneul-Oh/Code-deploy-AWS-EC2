@@ -1,0 +1,107 @@
+# Copyright IBM Corp. All Rights Reserved.
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+
+version: '3'
+
+networks:
+  edgechain0:
+    external: true
+  mec:
+    external: true
+    
+services:
+  auditor0:
+    container_name: auditor0
+    image: secondary
+    environment:
+      #Generic peer variables
+      - GOPATH=/go
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - COMPOSE_PROJECT_NAME="hello"
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=hello_test
+      - FABRIC_LOGGING_SPEC=speculator,accepter,endorser=DEBUG:valimpl,gossip.discovery,gossip.gossip,msp.identity=ERROR:INFO
+      - FABRIC_CFG_PATH=/go/src/github.com/sslab/bsstore/fabric/sampleconfig
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_PEER_GOSSIP_USELEADERELECTION=false
+      - CORE_PEER_GOSSIP_ORGLEADER=true
+      - CORE_PEER_PROFILE_ENABLED=true
+      - CORE_PEER_TLS_CERT_FILE=/etc/hyperledger/fabric/tls/server.crt
+      - CORE_PEER_TLS_KEY_FILE=/etc/hyperledger/fabric/tls/server.key
+      - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/tls/ca.crt
+      - CORE_PEER_ID=peer1.org1.example.com
+      - CORE_PEER_ADDRESS=peer1.org1.example.com:7051
+      - CORE_PEER_LISTENADDRESS=0.0.0.0:7051
+      - CORE_PEER_CHAINCODEADDRESS=peer1.org1.example.com:7052
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:7052
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer1.org1.example.com:7051
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer1.org1.example.com:7051
+      - CORE_PEER_LOCALMSPID=Org1MSP
+      - CORE_METRICS_PROVIDER=prometheus
+      - CORE_OPERATIONS_LISTENADDRESS=auditor0:9443
+      - BSP_PEER_FLAG=false
+      - BSP_SERVER_ADDR=:10000
+      - BSP_ORDERER_ADDR=orderer.example.com:7050
+      - EDGECHAIN_NAME=edgechain::0
+      - EDGECHAIN_ACTIVE_BSPID=bsp0.executor.edgechain0
+      - EDGECHAIN_NODE_NAME=auditor1.edgechain0.com
+      - EDGECHAIN_CHANGER_ENDPOINT=141.223.91.172
+      - EDGECHAIN_ROLE=auditor
+      - PRIMARY_ADDRESS=primaryAuditor:7000
+      - AUDITOR_ADDRESS=auditor1.edgechain0.com:10000
+      - SECONDARY_ADDRESS=auditor0:8000
+      - CHANGER_ADDRESS=auditor0:8001
+      - SECONDARY_ADDRESS_LIST=auditor0:8000,auditor1:8000,auditor2:8000,auditor3:8000
+      - BATCH_SIZE=100
+      - TX_NUMBERS_ROUND1=12000
+      - TX_NUMBERS_ROUND2=24000
+      - NUM_CLIENTS=5
+      - OVERLAPPING_OPTION=0
+      - PIPELINING_OPTION=1
+      # - RTT_BETA=0ms
+      # - DIFF_ALPHA=0ms
+      - NUM_AUDITORS=4
+      - NUM_QUORUM=3
+      - PIPELINE_DEPTH=100000
+      - LOG_FILE=/app/log/test-logs.txt
+      - COMMITTEESIZE=4
+      - INTERFACE_ADDR=13.57.210.190
+      - REDIS_ADDR=13.57.210.190
+      - THRESHOLD_VALUE=1.0
+      - NODE_IP=localhost1
+      - INTERFACE_PORT=50051
+      - NODE_IP_LIST=localhost1,localhost2,localhost3,localhost4
+    working_dir: /app
+    command: sh ./snclient
+    volumes:
+      - ./config/peerOrganizations/org1.example.com/peers/peer1.org1.example.com/tls/:/config/hyperledger/fabric/tls
+      - ./config/ordererOrganizations/example.com/orderers/orderer.example.com/tls/:/config/hyperledger/orderer/tls
+      - ./config/ordererOrganizations/example.com/orderers/orderer2.example.com/tls/:/config/hyperledger/orderer2/tls
+      - ./log/:/app/log
+    ports:
+      - 8000:8000
+      - 8001:8001
+      - 8002:9443
+      - 14000:10000
+    networks:
+      edgechain0:
+        aliases:
+          - auditor1.edgechain0.com
+          - changer1.edgechain0.com
+    restart: on-failure
+    extra_hosts:
+      - "orderer.example.com:3.39.185.240"
+      - "orderer2.example.com:3.39.185.240"
+      - "bsp1.executor.edgechain0:3.39.185.240"
+      - "peer0.org1.example.com:3.39.185.240"
+      - "aggregator1.edgechain0.com:3.37.121.247"
+      - "aggregator2.edgechain0.com:3.37.11.182"
+      - "aggregator3.edgechain0.com:13.209.133.189"
+      - "aggregator4.edgechain0.com:52.79.193.214"
+      - "aggregator5.edgechain0.com:43.200.230.184"
+      - "aggregator6.edgechain0.com:13.209.24.16"
+      - "aggregator7.edgechain0.com:3.34.170.214"
+      - "aggregator8.edgechain0.com:3.34.244.162"
+      - "aggregator9.edgechain0.com:3.35.151.163"
+      - "aggregator10.edgechain0.com:43.201.137.243"

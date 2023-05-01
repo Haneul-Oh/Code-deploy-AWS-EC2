@@ -1,0 +1,138 @@
+
+# Copyright IBM Corp. All Rights Reserved.
+#
+# SPDX-License-Identifier: Apache-2.0 ^^
+#
+version: '3'
+
+networks:
+  edgechain0:
+    external: true
+services:
+  client0_edgechain0:
+    container_name: client0_edgechain0
+    image: caliper_client:deployment
+    working_dir: /transaction/caliper-workspace
+    environment:
+      - AGGREGATOR_NAME=aggregator0.edgechain0.com
+      - AGGREGATOR_ADDRESS=aggregator0.edgechain0.com:30303
+      - CLIENT_ID=client0.edgechain0.com
+      - INTRA_CLIENTS=client0.edgechain0.com client1.edgechain0.com client2.edgechain0.com client3.edgechain0.com
+      - SHARD_ID=edgechain::0
+    command: npx caliper launch manager --caliper-workspace ./ --caliper-networkconfig ${CALIPER_NETWORKCONFIG} --caliper-benchconfig ${CALIPER_BENCHCONFIG_CLIENT0_EDGECHAIN0_MINIRUN} --caliper-flow-only-test --caliper-fabric-gateway-enabled
+    volumes:
+        - ./caliper-workspace:/transaction/caliper-workspace
+    extra_hosts:
+      - "auditor0:172.31.39.4"
+      - "auditor1:172.31.44.162"
+      - "auditor2:172.31.39.98"
+      - "auditor3:172.31.34.225"
+      - "auditor4:172.31.34.142"
+      - "auditor5:172.31.32.71"
+      - "auditor6:172.31.38.102"
+      - "auditor7:172.31.35.196"
+      - "auditor8:172.31.37.117"
+      - "auditor9:172.31.46.114"
+      - "auditor10:172.31.38.15"
+      - "auditor11:10.0.15.12"
+      - "auditor12:10.0.15.62"
+      - "auditor13:10.0.4.31"
+      - "auditor14:10.0.0.252"
+      - "auditor15:10.0.6.93"
+      - "auditor16:10.0.14.214"
+      - "auditor17:10.0.3.184"
+      - "auditor18:10.0.13.241"
+      - "auditor19:10.0.13.80"
+      - "auditor20:10.0.3.17"
+      - "auditor21:20.0.6.40"
+      - "auditor22:20.0.1.218"
+      - "auditor23:20.0.1.82"
+      - "auditor24:20.0.6.99"
+      - "auditor25:20.0.3.242"
+      - "auditor26:20.0.4.15"
+      - "auditor27:20.0.10.173"
+      - "auditor28:20.0.12.205"
+      - "auditor29:20.0.2.238"
+      - "auditor30:20.0.1.158"
+      - "auditor31:20.0.3.78"
+      - "orderer.example.com:3.39.185.240"
+      - "orderer2.example.com:3.39.185.240"
+      - "bsp1.executor.edgechain0:3.39.185.240"
+      - "peer0.org1.example.com:3.39.185.240"
+    networks:
+      - edgechain0
+
+  # client1_edgechain0:
+  #   container_name: client1_edgechain0
+  #   image: caliper_client:deployment
+  #   working_dir: /transaction/caliper-workspace
+  #   environment:
+  #     - AGGREGATOR_NAME=aggregator1.edgechain0.com
+  #     - AGGREGATOR_ADDRESS=aggregator1.edgechain0.com:30303
+  #     - CLIENT_ID=client1.edgechain0.com
+  #     - INTRA_CLIENTS=client0.edgechain0.com client1.edgechain0.com client2.edgechain0.com client3.edgechain0.com
+  #     - SHARD_ID=edgechain::0
+  #   command: npx caliper launch manager --caliper-workspace ./ --caliper-networkconfig ${CALIPER_NETWORKCONFIG} --caliper-benchconfig ${CALIPER_BENCHCONFIG_CLIENT1_EDGECHAIN0_MINIRUN} --caliper-flow-only-test --caliper-fabric-gateway-enabled
+  #   volumes:
+  #       - ./caliper-workspace:/transaction/caliper-workspace
+  #   extra_hosts:
+  #     - "auditor0:54.180.31.187"
+  #     - "auditor1:54.180.31.187"
+  #     - "auditor2:54.180.31.187"
+  #     - "auditor3:54.180.31.187"
+  #     - "orderer.example.com:52.79.98.46"
+  #     - "orderer2.example.com:52.79.98.46"
+  #     - "peer0.org1.example.com:52.79.98.46"
+  #     - "bsp1.executor.edgechain0:52.79.98.46"
+  #   networks:
+  #     - edgechain0
+
+  # client3_edgechain0:
+  #   container_name: client3_edgechain0
+  #   image: caliper_client:deployment
+  #   working_dir: /transaction/caliper-workspace
+  #   environment:
+  #     - AGGREGATOR_NAME=aggregator3.edgechain0.com
+  #     - AGGREGATOR_ADDRESS=aggregator3.edgechain0.com:30303
+  #     - CLIENT_ID=client3.edgechain0.com
+  #     - INTRA_CLIENTS=client0.edgechain0.com client1.edgechain0.com client2.edgechain0.com client3.edgechain0.com
+  #     - SHARD_ID=edgechain::0
+  #   command: npx caliper launch manager --caliper-workspace ./ --caliper-networkconfig ${CALIPER_NETWORKCONFIG} --caliper-benchconfig ${CALIPER_BENCHCONFIG_CLIENT3_EDGECHAIN0_SINGLERUN} --caliper-flow-only-test --caliper-fabric-gateway-enabled
+  #   volumes:
+  #       - ./caliper-workspace:/transaction/caliper-workspace
+  #   networks:
+  #     - edgechain0
+
+  # client4_edgechain0:
+  #   container_name: client4_edgechain0
+  #   image: caliper_client:deployment
+  #   # image: hyperledger/fabric-orderer:$IMAGE_TAG
+  #   working_dir: /transaction/caliper-workspace
+  #   environment:
+  #     - AGGREGATOR_NAME=aggregator4.edgechain0.com
+  #     - AGGREGATOR_ADDRESS=aggregator4.edgechain0.com:30303
+  #     - CLIENT_ID=client4.edgechain0.com
+  #     - INTRA_CLIENTS=client0.edgechain0.com client1.edgechain0.com client2.edgechain0.com 
+  #     - SHARD_ID=edgechain::0
+  #   command: npx caliper launch manager --caliper-workspace ./ --caliper-networkconfig ${CALIPER_NETWORKCONFIG} --caliper-benchconfig ${CALIPER_BENCHCONFIG_CLIENT4_EDGECHAIN0_SINGLERUN} --caliper-flow-only-test --caliper-fabric-gateway-enabled
+  #   volumes:
+  #       - ./caliper-workspace:/transaction/caliper-workspace
+  #   networks:
+  #     - edgechain0
+
+  # client5_edgechain0:
+  #   container_name: client5_edgechain0
+  #   image: caliper_client:deployment
+  #   # image: hyperledger/fabric-orderer:$IMAGE_TAG
+  #   working_dir: /transaction/caliper-workspace
+  #   environment:
+  #     - AGGREGATOR_NAME=aggregator5.edgechain0.com
+  #     - AGGREGATOR_ADDRESS=aggregator5.edgechain0.com:30303
+  #     - CLIENT_ID=client5.edgechain0.com
+  #     - INTRA_CLIENTS=client0.edgechain0.com client1.edgechain0.com client2.edgechain0.com
+  #     - SHARD_ID=edgechain::0
+  #   command: npx caliper launch manager --caliper-workspace ./ --caliper-networkconfig ${CALIPER_NETWORKCONFIG} --caliper-benchconfig ${CALIPER_BENCHCONFIG_CLIENT5_EDGECHAIN0_SINGLERUN} --caliper-flow-only-test --caliper-fabric-gateway-enabled
+  #   volumes:
+  #       - ./caliper-workspace:/transaction/caliper-workspace
+  #   networks:
+  #     - edgechain0
