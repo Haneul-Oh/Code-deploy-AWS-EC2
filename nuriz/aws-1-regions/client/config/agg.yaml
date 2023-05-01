@@ -1,0 +1,104 @@
+# Copyright IBM Corp. All Rights Reserved.
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+
+version: '3'
+
+networks:
+  edgechain0:
+    external: true
+  mec:
+    external: true
+
+
+services:
+  aggregator0.edgechain0.com:
+    container_name: aggregator0.edgechain0.com
+    image: aggregator
+    environment:
+      - CORE_PEER_LOCALMSPID=Org1MSP
+      - CORE_METRICS_PROVIDER=prometheus
+      - CORE_OPERATIONS_LISTENADDRESS=client0.edgechain0.com:9443
+      - AGGREGATOR_ENABLED=enabled
+      - AGGREGATOR_CFG_PATH=/etc/hyperledger/fabric
+      - AGGREGATOR_BSP_ADDRESS=peer0.org1.example.com:10000
+      # - AGGREGATOR_AUDITOR_ADDRESS=[auditor1.edgechain0.com:10000,auditor2.edgechain0.com:10000,auditor3.edgechain0.com:10000,auditor4.edgechain0.com:10000]
+      - AGGREGATOR_AUDITOR_ADDRESS=[auditor1.edgechain0.com:10000]
+      - AGGREGATOR_PORT=30303
+      - AGGREGATOR_EVENT_BUFFER_SIZE=60000
+      - AGGREGATOR_ID=aggregator0.edgechain0.com
+      - AGGREGATOR_TXSIM_ENABLED=false
+      - AGGREGATOR_TXSIM_WORKLOAD_SIZE=100000
+      - EDGECHAIN_NAME=edgechain::0
+      - EDGECHAIN_ROLE=aggregator
+      - LOG_FILE=/app/log/agg_log.txt
+      - TX_NUMBERS_ROUND1=18000
+      - TX_NUMBERS_ROUND2=36000
+      - AGGREGATOR_NAME=edgechain::0
+      - WORKER_NUMBER=2
+    ports:
+      - 37051:7051
+      - 30303:30303
+      - 40303:9443
+    networks:
+      edgechain0:
+        aliases:
+          - client0.edgechain0.com
+    volumes:
+        - ./sampleshard:/var/hyperledger/sampleshard
+        - ./organizations/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp:/etc/hyperledger/fabric/msp
+        - ./organizations/peerOrganizations/org1.example.com/users/Admin@org1.example.com/tls:/etc/hyperledger/fabric/tls
+        - ./log/:/app/log
+    extra_hosts:
+      - "orderer.example.com:43.200.138.118"
+      - "orderer2.example.com:43.200.138.118"
+      - "bsp1.executor.edgechain0:43.200.138.118"
+      - "peer0.org1.example.com:43.200.138.118"
+      - "auditor0:3.37.58.142"
+      - "auditor1:3.37.78.74"
+      - "auditor2:3.38.11.98"
+      - "auditor3:3.39.95.144"
+      - "auditor4:43.200.115.150"
+      - "auditor5:43.200.168.177"
+      - "auditor6:43.200.204.80"
+      - "auditor7:43.200.213.250"
+      - "auditor8:43.200.222.227"
+      - "auditor9:43.200.87.54"
+      - "auditor10:43.200.88.203"
+      - "auditor11:52.78.204.58"
+      - "auditor12:52.78.227.133"
+      - "auditor13:52.78.48.225"
+      - "auditor14:52.78.82.83"
+      - "auditor15:52.79.150.32"
+      - "auditor16:13.209.166.25"
+      - "auditor17:13.209.244.242"
+      - "auditor18:15.164.23.81"
+      - "auditor19:15.164.24.115"
+      - "auditor20:15.164.248.225"
+      - "auditor21:15.164.249.11"
+      - "auditor22:15.164.67.140"
+      - "auditor23:15.164.75.125"
+      - "auditor24:15.165.146.3"
+      - "auditor25:15.165.54.199"
+      - "auditor26:3.34.236.77"
+      - "auditor27:3.34.81.177"
+      - "auditor28:3.35.85.107"
+      - "auditor29:3.36.30.150"
+      - "auditor30:3.37.182.155"
+      - "auditor31:52.78.176.241"
+      - "auditor32:3.76.101.143"
+      - "auditor33:3.72.202.124"
+      - "auditor34:3.122.1.121"
+      - "auditor35:3.76.112.237"
+      - "auditor36:3.126.32.240"
+  #   container_name: monitor.edgechain0.com
+  #   image: prom/prometheus
+  #   ports: 
+  #     - 9090:9090
+  #   networks:
+  #     edgechain0:
+  #   volumes:
+  #       - ./prom/prometheus.yml:/etc/prometheus/prometheus.yml
+  #       # - ./prom/monitor.edgechain0.com:/prometheus
+  #   restart: on-failure
