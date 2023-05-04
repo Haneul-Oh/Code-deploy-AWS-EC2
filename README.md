@@ -34,7 +34,7 @@ Performance (throughput, latency) is measured for 1 minute after the first 30 se
 We run our experiments on two scenarios: a local-distributed scenario, where every node is deployed in the Seoul region, and a global-distributed scenario, where auditor nodes are distributed across two AWS regions: Seoul (ap-northeast-2), N.Virginia (us-east-1).
 
 <p align="center">
-  <img alt="Scenario 1" src="./img/sn1.png" width="50%">
+  <img alt="Scenario 1" src="./img/sn1.png" width="100%">
 &nbsp; &nbsp; &nbsp; &nbsp;
-  <img alt="Scenario 2" src="./img/sn2.png" width="50%">
+  <img alt="Scenario 2" src="./img/sn2.png" width="100%">
 </p>
