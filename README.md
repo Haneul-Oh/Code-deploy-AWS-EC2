@@ -14,7 +14,7 @@ AuditChain is a private blockchain system using PBFT-like consensus with linear 
 As shown in Fig 1, AuditChain has two types of nodes: A Block Service Provider (BSP) and consensus nodes called auditors. BSP is responsible for creating blocks, while auditors forming a consensus network are responsible for agreement on blocks received from the BSP. 
 
 <p align="center">
-  <img alt="Example preview image" src="./img/auditchain_msgflw.png" width="100%">
+  <img alt="Example preview image" src="./img/auditchain_flow.png" width="100%">
   <figcaption>Fig 2. Message pattern of AuditChain</figcaption>
 </p>
 
@@ -34,7 +34,7 @@ I deployed AuditChain on AWS EC2 as shown in the table below. We also deployed c
 We run our experiments on two scenarios: a local-distributed scenario, where every node is deployed in the Seoul region, and a global-distributed scenario, where auditor nodes are distributed across two AWS regions: Seoul (ap-northeast-2), N.Virginia (us-east-1).
 
 <p align="center">
-  <img alt="Scenario 1" src="./img/sn1" width="45%">
+  <img alt="Scenario 1" src="./img/sn1.png" width="45%">
 &nbsp; &nbsp; &nbsp; &nbsp;
-  <img alt="Scenario 1" src="./img/sn2" width="45%">
+  <img alt="Scenario 1" src="./img/sn2.png" width="45%">
 </p>
