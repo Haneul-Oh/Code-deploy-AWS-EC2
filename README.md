@@ -21,20 +21,22 @@ As shown in Fig 1, AuditChain has two types of nodes: A Block Service Provider (
 The consensus algorithm shown in Fig 2 is like PBFT but with linear O(n) communication complexity. The difference with PBFT is that it is linearized and has an additional node, BSP, as a static block producer.
 
 ## Deployment Setup on Amazon EC2
-I deployed AuditChain on AWS EC2 as shown in the table below. We also deployed client servers for performance evaluation and evaluated performance according to the workloads below.
+We deployed AuditChain on AWS EC2 as shown in the table below. We also deployed client servers for performance evaluation and evaluated performance according to the workloads below.
 
 <p align="center">
   <img alt="Example preview image" src="./img/setup_tb.png" width="100%">
-  <figcaption>Table 1. 2Message pattern of AuditChain</figcaption>
 </p>
 
-**Workload**. Performance (throughput, latency) is measured for 1 minute after the first 30 seconds after the test starts. We use the Hyperledger Caliper benchmarking tool to test the performance. In Every test, for a total of 2 minutes, the client submits a SendPayment transaction to BSP. When referring to latency, we mean the time elapsed from the client submits the transaction to the client receives the f+1 commit events from auditors. 
+### Workload
+Performance (throughput, latency) is measured for 1 minute after the first 30 seconds after the test starts. We use the Hyperledger Caliper benchmarking tool to test the performance. In Every test, for a total of 2 minutes, the client submits a SendPayment transaction to BSP. When referring to latency, we mean the time elapsed from the client submits the transaction to the client receives the f+1 commit events from auditors. 
 
-## Two scenarios
+### Two scenarios
 We run our experiments on two scenarios: a local-distributed scenario, where every node is deployed in the Seoul region, and a global-distributed scenario, where auditor nodes are distributed across two AWS regions: Seoul (ap-northeast-2), N.Virginia (us-east-1).
 
 <p align="center">
   <img alt="Scenario 1" src="./img/sn1.png" width="45%">
+  <figcaption>Scenario 1: a local-distributed scenario</figcaption>
 &nbsp; &nbsp; &nbsp; &nbsp;
-  <img alt="Scenario 1" src="./img/sn2.png" width="45%">
+  <img alt="Scenario 2" src="./img/sn2.png" width="45%">
+  <figcaption>Scenario 2: a global-distributed scenario</figcaption>
 </p>
