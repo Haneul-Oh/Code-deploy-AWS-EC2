@@ -35,8 +35,6 @@ We run our experiments on two scenarios: a local-distributed scenario, where eve
 
 <p align="center">
   <img alt="Scenario 1" src="./img/sn1.png" width="45%">
-  <figcaption>Scenario 1: a local-distributed scenario</figcaption>
 &nbsp; &nbsp; &nbsp; &nbsp;
   <img alt="Scenario 2" src="./img/sn2.png" width="45%">
-  <figcaption>Scenario 2: a global-distributed scenario</figcaption>
 </p>
