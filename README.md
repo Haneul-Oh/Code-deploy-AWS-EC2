@@ -11,8 +11,8 @@ AuditChain is a private blockchain system using PBFT-like consensus with linear 
   <figcaption>Fig 1. AuditChain architecture consists of three components: a client, a BSP, and auditors.</figcaption>
 </p>
 
-**Note**
-Please check the repositories below for more information.
+<p class="callout info">Please check the repositories below for more information.</p>
+
 
 ## Components of Implementation
 Each component was developed by containerization according to its function and is composed as follows.
