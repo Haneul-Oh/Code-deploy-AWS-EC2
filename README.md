@@ -4,6 +4,8 @@
 This repository is the automated code for AWS Cloud deployment and performance measurement of AuditChain, a private blockchain system.
 
 ## About AuditChain: a Private Blockchain Platform 
+> 🙂 For more information, Please check [this repository](https://github.com/Haneul-Oh/Auditchain). 🙂 
+
 AuditChain is a private blockchain system using PBFT-like consensus with linear communication complexity, assuming a partially synchronous network. While the traditional PBFT consensus algorithm is monolithic, block generation steps are separated from the consensus layer in AuditChain.
 
 <p align="center">
@@ -11,9 +13,6 @@ AuditChain is a private blockchain system using PBFT-like consensus with linear 
   <figcaption>Fig 1. AuditChain architecture consists of three components: a client, a BSP, and auditors.</figcaption>
 </p>
 
-> 
-> 🙂 For more information, Please check [this repository](https://github.com/Haneul-Oh/Auditchain). 🙂 
-> 
 
 ## Components of Implementation
 Each component was developed by containerization according to its function and is composed as follows.
