@@ -12,7 +12,8 @@ AuditChain is a private blockchain system using PBFT-like consensus with linear 
 </p>
 
 ```
-Please check the repositories below for more information.
+🙂 For more information, Please check [this repository]{https://github.com/Haneul-Oh/Auditchain}. 🙂 
+
 ```
 
 ## Components of Implementation
