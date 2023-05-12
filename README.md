@@ -11,14 +11,15 @@ AuditChain is a private blockchain system using PBFT-like consensus with linear 
   <figcaption>Fig 1. AuditChain architecture consists of three components: a client, a BSP, and auditors.</figcaption>
 </p>
 
-As shown in Fig 1, AuditChain has two types of nodes: A Block Service Provider (BSP) and consensus nodes called auditors. BSP is responsible for creating blocks, while auditors forming a consensus network are responsible for agreement on blocks received from the BSP. 
+**Note**
+Please check the repositories below for more information.
+
+## Components of Implementation
+Each component was developed by containerization according to its function and is composed as follows.
 
 <p align="center">
-  <img alt="Example preview image" src="./img/auditchain_flow.png" width="100%">
-  <figcaption>Fig 2. Message pattern of AuditChain</figcaption>
+  <img alt="Example preview image" src="./img/components.png" width="100%">
 </p>
-
-The consensus algorithm shown in Fig 2 is like PBFT but with linear O(n) communication complexity. The difference with PBFT is that it is linearized and has an additional node, BSP, as a static block producer.
 
 ## Deployment Setup on Amazon EC2
 We deployed AuditChain on AWS EC2 as shown in the table below. We also deployed client servers for performance evaluation and evaluated performance according to the workloads below.
